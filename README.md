@@ -8,7 +8,21 @@ TODO: screenshots of web app and model results
 
 ## Installation
 
-- TODO: how to run the Python scripts and web app
+### Dependencies
+
+- TODO: Add dependencies
+
+### How to run the project
+
+1. Navigate yourself to the project's root directory.
+
+2. To run ETL pipeline that cleans data and stores in database:
+
+```
+python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
+```
+
+TODO: how to run the Python scripts and web app
 
 ## File Descriptions
 
