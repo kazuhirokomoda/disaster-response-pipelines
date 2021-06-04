@@ -22,7 +22,13 @@ TODO: screenshots of web app and model results
 python data/process_data.py data/disaster_messages.csv data/disaster_categories.csv data/DisasterResponse.db
 ```
 
-TODO: how to run the Python scripts and web app
+3. To run ML pipeline that trains classifier and saves it:
+
+```
+python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
+```
+
+TODO: how to run web app
 
 ## File Descriptions
 
