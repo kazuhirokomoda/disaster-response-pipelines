@@ -11,6 +11,17 @@ url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-
 
 
 def tokenize(text):
+    """Performs tokenization processes to input text to return list of
+    processed words. For the custom transformers.
+
+    Args:
+        text (str): Text to be processed.
+
+    Returns:
+        list: List of processed words.
+
+    """
+
     detected_urls = re.findall(url_regex, text)
     for url in detected_urls:
         text = text.replace(url, "urlplaceholder")
@@ -29,6 +40,17 @@ def tokenize(text):
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
     def starting_verb(self, text):
+        """Checks if the first word in the given text is a verb.
+
+        Args:
+            text (str): Python str object. Assumes one or more
+            sentences.
+
+        Returns:
+            bool: Whether the first word in the given `text` is
+            a verb.
+
+        """
         sentence_list = nltk.sent_tokenize(text)
         for sentence in sentence_list:
             pos_tags = nltk.pos_tag(tokenize(sentence))

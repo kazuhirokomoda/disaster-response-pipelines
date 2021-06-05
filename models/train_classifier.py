@@ -88,24 +88,18 @@ def tokenize(text):
     return stemmed
 
 
-def build_model():
-    """Pipeline to vectorize and then apply TF-IDF to the text.
+def build_model(is_grid=True):
+    """Builds pipeline to vectorize and then apply TF-IDF to the text.
+    Additional features can be added with FeatureUnion.
 
     Args:
-        None.
+        is_grid (bool): Whether to perform grid search. True to use grid search,
+        False to skip grid search and use default parameters. Default True.
 
     Returns:
         Pipeline or GridSearchCV object: scikit-learn pipeline of transforms 
         with a final estimator.
 
-    """
-
-    """
-    pipeline = Pipeline([
-        ('vect', CountVectorizer(tokenizer=tokenize)),
-        ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(estimator = RandomForestClassifier(n_jobs=-1)))
-    ])
     """
 
     pipeline = Pipeline([
@@ -116,14 +110,13 @@ def build_model():
             ])),
             ('starting_verb', StartingVerbExtractor())
         ])),
-        ('clf', MultiOutputClassifier(estimator = RandomForestClassifier(n_jobs=-1)))
+        ('clf', MultiOutputClassifier(estimator = RandomForestClassifier(n_jobs=None)))
     ])
 
-    # TODO: grid search not ending forever
     parameters = {
-        'features__text_pipeline__vect__ngram_range': ((1, 1),), #((1, 1), (1, 2), (2, 2)), # default (1, 1)
-        'features__text_pipeline__vect__max_df': (0.5, 1.0), #(0.5, 0.75, 1.0), # default 1.0
-        #'features__text_pipeline__vect__max_features': (None, 5000, 10000), # default None
+        'features__text_pipeline__vect__ngram_range': ((1, 2),), # default (1, 1). (1, 2) was chosen over (1, 1) and (2, 2)
+        'features__text_pipeline__vect__max_df': (1.0,), # default 1.0. 1.0 was chosen over 0.5
+        'features__text_pipeline__vect__max_features': (None, 5000, 10000), # default None, 5000 was chosen over None and 10000.
         #'features__text_pipeline__tfidf__use_idf': (True, False), # default True
         #'clf__estimator__n_estimators': (50, 100, 200), # default 100
         #'features__transformer_weights': (
@@ -133,14 +126,22 @@ def build_model():
         #)
     }
 
-    cv = GridSearchCV(pipeline, param_grid=parameters)
-
-    #return pipeline
-    return cv
+    if is_grid:
+        cv = GridSearchCV(pipeline, param_grid=parameters)
+        return cv
+    return pipeline
 
 
 def get_scores(y_true, y_pred):
-    """
+    """Calculates Precision, recall, f1 score given ground truth and
+    predicted target label.
+
+    Args:
+        y_true (np.ndarray): Ground truth target label.
+        y_pred (np.ndarray): Target label predicted by a model.
+
+    Returns:
+        dict: Precision, recall, f1 score for the given arrays.
 
     """
 
@@ -162,9 +163,9 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
     Args:
         model (Pipeline or GridSearchCV object): scikit-learn pipeline.
-        X_test (np.ndarray): .
-        Y_test (np.ndarray): .
-        category_names (np.ndarray): .
+        X_test (np.ndarray): Features for test data.
+        Y_test (np.ndarray): Ground truth target label for test data.
+        category_names (np.ndarray): Category names.
 
     Returns:
         None
