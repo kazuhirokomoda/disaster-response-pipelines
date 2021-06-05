@@ -2,28 +2,15 @@ import json
 import plotly
 import pandas as pd
 
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
-
 from flask import Flask
-from flask import render_template, request, jsonify
-from plotly.graph_objs import Bar
+from flask import render_template, request
+from plotly.graph_objs import Bar, Histogram
 import joblib
 from sqlalchemy import create_engine
 
+from custom_transformer import tokenize
 
 app = Flask(__name__)
-
-def tokenize(text):
-    tokens = word_tokenize(text)
-    lemmatizer = WordNetLemmatizer()
-
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
-
-    return clean_tokens
 
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
@@ -37,14 +24,23 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    
+
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
-    
+
+    category_counts = (df.drop(columns=['id', 'message', 'original', 'genre']) == 1).sum()
+    category_names = list(category_counts.index)
+
+    message_lengths = df.message.str.len()
+    max_message_length = message_lengths.max()
+    # 10818
+    #print(max_message_length)
+    # id                                            message original genre  related  request  offer  ...  floods  storm  fire  earthquake  cold  other_weather  direct_report
+    # 20844  24243  While the focus is to save lives and fight dis...     None  news        1        1      0  ...       1      1     0           1     0              1              0
+    #print(df[df.message.str.len() == max_message_length])
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -61,6 +57,42 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=category_names,
+                    y=category_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Category"
+                }
+            }
+        },
+        {
+            'data': [
+                Histogram(
+                    x=message_lengths,
+                    xbins=dict(start=0, end=max_message_length)
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Lengths',
+                'yaxis': {
+                    'title': "Frequency"
+                },
+                'xaxis': {
+                    'title': "Length"
                 }
             }
         }
