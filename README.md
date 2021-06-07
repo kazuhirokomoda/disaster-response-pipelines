@@ -1,5 +1,8 @@
 # Disaster Response Pipelines
 
+![Distribution of Message Categories](images/message-category-distribution.png)
+![Classification result obtained from user text input](images/message-classification.png)
+
 ## Project Motivation
 
 To utilize the [real life disaster datasets](https://github.com/kazuhirokomoda/disaster-response-pipelines/tree/master/data) provided by [Figure Eight](https://appen.com/) to perform the followings:
