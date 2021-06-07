@@ -21,7 +21,7 @@ from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
 
-from custom_transformer import StartingVerbExtractor
+from custom_transformer import MessageLengthExtractor, StartingVerbExtractor
 
 
 URL_REGEX = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
@@ -109,7 +109,8 @@ def build_model(is_grid=True):
                 ('vect', CountVectorizer(tokenizer=tokenize)),
                 ('tfidf', TfidfTransformer())
             ])),
-            ('starting_verb', StartingVerbExtractor())
+            ('message_length', MessageLengthExtractor()),
+            #('starting_verb', StartingVerbExtractor()),
         ])),
         ('clf', MultiOutputClassifier(estimator = RandomForestClassifier(n_jobs=-1)))
     ])

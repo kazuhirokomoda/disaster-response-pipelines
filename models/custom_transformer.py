@@ -37,6 +37,15 @@ def tokenize(text):
     return clean_tokens
 
 
+class MessageLengthExtractor(BaseEstimator, TransformerMixin):
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, X):
+        X_len = pd.Series(X).apply(lambda x: len(x)).values
+        return pd.DataFrame(X_len)
+
+
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
     def starting_verb(self, text):
