@@ -1,3 +1,4 @@
+import multiprocessing
 import sys
 import pandas as pd
 import numpy as np
@@ -110,7 +111,7 @@ def build_model(is_grid=True):
             ])),
             ('starting_verb', StartingVerbExtractor())
         ])),
-        ('clf', MultiOutputClassifier(estimator = RandomForestClassifier(n_jobs=None)))
+        ('clf', MultiOutputClassifier(estimator = RandomForestClassifier(n_jobs=-1)))
     ])
 
     parameters = {
@@ -229,4 +230,5 @@ def main():
 
 
 if __name__ == '__main__':
+    multiprocessing.set_start_method('forkserver')
     main()
