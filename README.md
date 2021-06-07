@@ -52,6 +52,19 @@ python run.py
 - `models/` directory includes ML script `train_classifier.py` to train a classifier and store it into a pickle file
 - `app/` directory includes web app `run.py` to handle visualizations using data from SQLite database
 
+## Note on the class imbalance of this dataset
+
+As we see from the screenshot above, this dataset is imbalanced. For reference, [This Google document](https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting/imbalanced-data) defines Degree of imbalance to be "Extreme" when "Proportion of Minority Class <1% of the data set".
+
+The side effect could be that the training model will spend most of its time on majority examples and not learn enough from minority ones.
+
+Typical approaches to tackle this issue would be to:
+
+- Downsampling: Use subset of the majority class samples
+- Oversample: Increase the minority class samples (usually synthetically)
+
+Libraries like [imbalanced-learn](https://imbalanced-learn.org/stable/) provide implementations of these techniques, including [Synthetic Minority Oversampling Technique (SMOTE)](https://imbalanced-learn.org/stable/zzz_references.html#id12).
+
 ## Licensing, Authors, Acknowledgements
 
 - [Figure Eight](https://appen.com/) for preparing the datasets
