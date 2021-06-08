@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 
@@ -42,10 +43,18 @@ def clean_data(df):
     for column in categories:
         categories[column] = categories[column].str[-1]
         categories[column] = categories[column].astype(int)
+        # print out non-binary column
+        if not np.isin(categories[column].unique(), [0, 1]).all():
+            print('category {} is not binary.\n{}'.format(column, categories[column].value_counts()))
 
     # Replace categories column in df with new category columns.
     df.drop(columns=['categories'], inplace=True)
     df = pd.concat([df, categories], axis=1)
+
+    # Cleaning for related category
+    df['related'] = df['related'].astype('str').str.replace('2', '1')
+    df['related'] = df['related'].astype('int')
+    print('category {} is now binary.\n{}'.format('related', df['related'].value_counts()))
 
     # Remove duplicates.
     if df.duplicated().sum() != 0:
@@ -67,7 +76,7 @@ def save_data(df, database_filename):
     """
 
     engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql('disaster_categories', engine, index=False)
+    df.to_sql('disaster_categories', engine, if_exists='replace', index=False)
 
 
 def main():

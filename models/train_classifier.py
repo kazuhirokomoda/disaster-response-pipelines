@@ -1,4 +1,3 @@
-import multiprocessing
 import sys
 import pandas as pd
 import numpy as np
@@ -19,7 +18,6 @@ from sklearn.pipeline import Pipeline, FeatureUnion
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
-from nltk.stem.porter import PorterStemmer
 
 from custom_transformer import MessageLengthExtractor, StartingVerbExtractor
 
@@ -83,10 +81,7 @@ def tokenize(text):
     # Lemmatize verbs by specifying pos
     lemmed = [WordNetLemmatizer().lemmatize(w, pos='v') for w in words]
 
-    # Reduce lemmatized words to their stems
-    stemmed = [PorterStemmer().stem(l) for l in lemmed]
-
-    return stemmed
+    return lemmed
 
 
 def build_model(is_grid=True):
@@ -231,5 +226,4 @@ def main():
 
 
 if __name__ == '__main__':
-    multiprocessing.set_start_method('forkserver')
     main()
